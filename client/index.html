@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client RealTimeDatabase</title>
+</head>
+
+<body>
+    <div id="pingInfo"></div>
+    <script lang="javascript" src="./js/socket.io.slim.js"></script>
+    <script lang="javascript">
+        const showItens = (itens) => {
+            let html = "<ul>";
+            itens.forEach((a) => html += "<li>" + a.name + "</li>");
+            html += "</ul>";
+            document.getElementById('pingInfo').innerHTML = html;
+        }
+        let socket = io('http://localhost:3000');
+        socket.on('ItensChanged', (data) => {
+            console.log(data);
+            showItens(data);
+        })
+    </script>
+</body>
+
+</html>

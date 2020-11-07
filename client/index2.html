@@ -18,10 +18,10 @@
                 html += "</ul>";
                 document.getElementById('pingInfo').innerHTML = html;
             }
-            const socket = io('http://localhost:3000/products')
+            const socket = io('http://localhost:3000') 
             socket.on('cache-products', (data) => { 
                 console.log(data);
-                showItens(data);
+                showItens(data); 
             })
         })();
     </script>

@@ -1,62 +1,40 @@
-let express = require('express');
-const bodyParser = require('body-parser');
+const express = require('express')
+const bodyParser = require('body-parser')
+const serverData = require('./security/database.json')
+const socketCreator = require('../socket/')
+const cache = require('../cache/')
 
-let app = express();
+const app = express()
 
-let port = 3000;
+const port = 3000
 
-/*const sql = require("mssql");
-sql.connect(connStr)
-    .then(conn => global.conn = conn)
-    .catch(err => console.log("erro! " + err));*/
+const connStr = serverData.connectionString
+const sql = require("mssql")
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-let server = app.listen(port, () => console.log("Servidro ouvindo a porta " + port));
-
-let io = require('socket.io').listen(server);
-
-io.on('connection', function(socket) {
-    console.log("Usuário conectou!");
-    socket.on('disconnect', function() {
-        console.log("Usuário desconectou!");
-    })
-    /*socket.on("novaMensagem", function(data) {
-        io.emit('registraMensagem', {apelido: data.apelido, msg: data.msg});
-        io.emit('atualizaParticipantes', {apelido: data.apelido});
-        //io.broadcast.emit('registraMensagem', {apelido: data.apelido, msg: data.msg});
-    });*/
-
-});
-
-/*setInterval(() => {
-    io.emit("Ping", {timestamp: (+new Date())})
-}, 2000);*/
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 
 app.get("/", function (req, res) {
-    res.send("Servidor respondendo !!!!!");
-    return;
+    console.time("products")
+    cache.getData('products').then((data) => res.json(data))
+        .catch((err) => res.status(500).send("Erro inteno do servidor! " + err))
+        .finally(() => console.timeEnd("products"))
 });
 
-/*app.get("/api/:table", (req, res) => {
-    global.conn.request().query(`SELECT * FROM Ticket 
-    SELECT * FROM ${req.params.table}`)
-        .then(result => res.json(result))
-        .catch(err => res.json(err));
-})*/
+let server = {}
+let socket = {}
 
-app.get("/newItem", function(req, res) {
-    let next = Itens.length + 1
-    Itens.push({id: next, name: `Nome ${(next < 10 ? '0' + next.toString() : next.toString())}`});
-    io.emit("ItensChanged", Itens);
-    res.send("Item Inserido !!!!!");
-    return;
+sql.connect(connStr)
+    .then(conn => {
+        console.log("DB Conectado!")
+        global.conn = conn
+        server = app.listen(port, () => console.log("Servidro ouvindo a porta " + port))
+        socket = socketCreator(server)
+    })
+    .catch(err => console.log("erro! " + err))
+cache.registerNotify("*", (message, data) => {
+    socket.sendMessage(message, data)
 })
 
-const Itens = [
-    {id: 1, name: "Nome 01"},
-    {id: 2, name: "Nome 02"}
-];
 
 module.exports = app;

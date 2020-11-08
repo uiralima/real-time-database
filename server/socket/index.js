@@ -1,43 +1,26 @@
 const cache = require('../cache/')
 const cacheNotificationControl = {}
-const log = require('../log/')
+
 module.exports = (server) => {
     const io = require('socket.io').listen(server);
     const productsNamespace = io.of('/products');
 
-    io.on('connection', function (socket) {
-        console.log("Usuário conectou!");
-        //console.log(socket)
-        /*if ((socket.handshake) && (socket.handshake.query) && (socket.handshake.query) && (socket.handshake.query.messages)){
-            const newNamespace = socket.nsp;
-            socket.handshake.query.messages.split(',').forEach((message) => {
-                if (message.indexOf('cache-') === 0) {
-                    if (cacheNotificationControl[message]) {
-                        cacheNotificationControl[message].push(socket)
-                    }
-                    else {
-                        cacheNotificationControl[message] = [socket]
-                    }
-                    //log.log(cacheNotificationControl[message])
-                    
-                    })
-                }
-            })
-        }*/
+    /*io.on('connection', function (socket) {
+        log.log("Usuário conectou!");
         socket.on('disconnect', function () {
-            console.log("Usuário desconectou!");
+            log.log("Usuário desconectou!");
         })
 
-    });
+    });*/
     productsNamespace.on('connection', function (socket) {
-        console.log("Usuário conectou! em produtos");
+        log.log("Usuário conectou! em produtos");
         const newNamespace = socket.nsp;
         cache.getData("products").then((data) => {
             newNamespace.emit("cache-products", data);
 
         })
         socket.on('disconnect', function () {
-            console.log("Usuário desconectou!");
+            log.log("Usuário desconectou de proditos!");
         })
     })
     const socket = {

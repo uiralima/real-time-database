@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
     <div id="pingInfo"></div>
     <script lang="javascript" src="./js/socket.io.slim.js"></script>
     <script lang="javascript">
-        (() => {
+        //(() => {
             const showItens = (itens) => {
                 let html = "<ul>";
                 itens.forEach((a) => html += "<li>" + a.Fullname + "</li>");
@@ -20,10 +20,9 @@
             }
             const socket = io('http://localhost:3000/products')
             socket.on('cache-products', (data) => { 
-                console.log(data);
                 showItens(data);
             })
-        })();
+        //})();
     </script>
 </body>
 

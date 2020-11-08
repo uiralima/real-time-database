@@ -1,0 +1,80 @@
+{
+    "groups": {
+        "endpoint": "groups",
+        "isCacheable": true,
+        "dataBase": {
+            "select": {
+                "query": "SELECT GroupId, Fullname, ImagePath FROM teste_cache_goup",
+                "paramenters": []
+            },
+            "update": {
+                "query": "SELECT * FROM teste_cache",
+                "paramenters": []
+            },
+            "insert": {
+                "query": "SELECT * FROM teste_cache",
+                "paramenters": []
+            },
+            "delete": {
+                "query": "SELECT * FROM teste_cache",
+                "paramenters": []
+            }
+        },
+        "resume": [ "GroupId", "Fullname" ],
+        "id": "GroupId"
+    },
+    "products": {
+        "endpoint": "products",
+        "isCacheable": true,
+        "dataBase": {
+            "select": {
+                "query": "SELECT ProductId, GroupId, Fullname, Description, IsActive, ImagePath, Weighable, CAST(RowVersion AS BIGINT) AS RowVersion FROM teste_cache",
+                "paramenters": []
+            },
+            "getTimestamp": {
+                "query": "SELECT CAST(MAX(RowVersion) AS BIGINT) AS ts FROM teste_cache",
+                "parameters": []
+            },
+            "update": {
+                "query": "SELECT * FROM teste_cache",
+                "paramenters": []
+            },
+            "insert": {
+                "query": "SELECT * FROM teste_cache",
+                "paramenters": []
+            },
+            "delete": {
+                "query": "SELECT * FROM teste_cache",
+                "paramenters": []
+            }
+        },
+        "resume": [ "ProductId", "Fullname" ],
+        "id": "ProductId",
+        "checkTimestamp": "RowVersion"
+    },
+    "sales": {
+        "endpoint": "sales",
+        "isCacheable": false,
+        "dataBase": {
+            "select": {
+                "query": "SELECT * FROM Sale",
+                "resumeQuery": "SELECT SaleId, ProcessKey FROM Sale",
+                "paramenters": []
+            },
+            "update": {
+                "query": "",
+                "paramenters": []
+            },
+            "insert": {
+                "query": "",
+                "paramenters": []
+            },
+            "delete": {
+                "query": "",
+                "paramenters": []
+            }
+        },
+        "resume": ["SaleId", "ProcessKey"],
+        "id": "SaleId"
+    }
+}

@@ -1,12 +1,23 @@
+const cacheConfig = require('./config/cacheConfig.json')
 module.exports = function (dataId) {
     return {
-        select: function (){
-            if (dataId === "products") {
-                return `SELECT * FROM teste_cache`
-            }
-            else {
-                return ""
-            }
-        }
+        getAll: function (){
+            return cacheConfig[dataId].dataBase.select.query
+        },
+        getResume: function(){
+            return cacheConfig[dataId].dataBase.select.resumeQuery
+        },
+        insert: function (){
+            return cacheConfig[dataId].dataBase.insert.query
+        },
+        update:function (){
+            return cacheConfig[dataId].dataBase.update.query
+        },
+        delete:function (){
+            return cacheConfig[dataId].dataBase.delete.query
+        },
+        getTimestamp:function() {
+            return cacheConfig[dataId].dataBase.getTimestamp.query
+        } 
     }
 }

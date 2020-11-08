@@ -29,10 +29,9 @@ app.get("/groups", function (req, res) {
         .finally(() => console.timeEnd("groups"))
 });
 
-
 app.get("/sales", function (req, res) {
     console.time("sales")
-    cache.getData('sales').then((data) => res.json(data))
+    cache.getResume('sales').then((data) => res.json(data))
         .catch((err) => res.status(500).send("Erro inteno do servidor! " + err))
         .finally(() => console.timeEnd("sales"))
 });

@@ -34,13 +34,13 @@ module.exports = function (dataId) {
             })
         },
 
-        getTimestamp: function() {
+        getTimestamp: function(parameters) {
             return new Promise((resolve, reject) => {
-                const query = queryManager(dataId).getTimestamp()
+                const query = queryManager(dataId).getTimestamp(parameters)
                 if (query) {
+                    
                     global.conn.request().query(query).then((data) => {
-                        console.log(parseInt(data.recordset[0].ts))
-                        resolve(data.recordset[0].ts)
+                        resolve(data.recordset)
                     }).catch((err) => {
                         reject(err)
                     })

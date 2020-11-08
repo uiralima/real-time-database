@@ -1,1 +1,1 @@
-- Ao atualizar o cache, buscar apenas os registros alterados após o ultimo timestamp
+- Tratar deleção em tabelas com timestamp

@@ -1,23 +1,31 @@
 const cacheConfig = require('./config/cacheConfig.json')
 module.exports = function (dataId) {
     return {
-        getAll: function (){
+        getAll: function () {
             return cacheConfig[dataId].dataBase.select.query
         },
-        getResume: function(){
+        getResume: function () {
             return cacheConfig[dataId].dataBase.select.resumeQuery
         },
-        insert: function (){
-            return cacheConfig[dataId].dataBase.insert.query
+        insert: function (parameters) {
+            return organizeParameters(cacheConfig[dataId].dataBase.insert, parameters)
         },
-        update:function (){
-            return cacheConfig[dataId].dataBase.update.query
+        update: function (parameters) {
+            return organizeParameters(cacheConfig[dataId].dataBase.update, parameters)
         },
-        delete:function (){
-            return cacheConfig[dataId].dataBase.delete.query
+        delete: function (parameters) {
+            return organizeParameters(cacheConfig[dataId].dataBase.delete, parameters)
         },
-        getTimestamp:function() {
-            return cacheConfig[dataId].dataBase.getTimestamp.query
-        } 
+        getTimestamp: function (parameters) {
+            return organizeParameters(cacheConfig[dataId].dataBase.getTimestamp, parameters)
+        }
     }
+}
+
+const organizeParameters = function (config, parameters) {
+    let query = config.query
+    config.parameters.forEach((item) => {
+        query = query.replace(`{@${item}}`, parameters[item])
+    })
+    return query
 }

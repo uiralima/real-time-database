@@ -20,7 +20,39 @@ app.get("/products", function (req, res) {
     cache.getResume('products').then((data) => res.json(data))
         .catch((err) => res.status(500).send("Erro inteno do servidor! " + err))
         .finally(() => console.timeEnd("products"))
-});
+})
+
+app.post("/products", function (req, res) {
+    console.log("Insert product");
+    const id = (+new Date()).toString()
+    const newProduct = {
+        ProductId: id,
+        GroupId: '01.01',
+        Fullname: `Produto ${id}`,
+        Description: "Descrição",
+        IsActive: true,
+        ImagePath: "",
+        Weighable: false
+    }
+    cache.insertData("products", newProduct).then((data) => res.json(newProduct))
+    .catch((err) => res.status(500).send("Erro inteno do servidor! " + err))
+})
+
+app.put("/products", function (req, res) {
+    console.log("Insert product");
+    const id = '1604953809116'
+    const newProduct = {
+        ProductId: id,
+        GroupId: '01.01',
+        Fullname: `Produto Atualizado ${id}`,
+        Description: "Descrição",
+        IsActive: true,
+        ImagePath: "",
+        Weighable: false
+    }
+    cache.updateData("products", newProduct).then((data) => res.json(newProduct))
+    .catch((err) => res.status(500).send("Erro inteno do servidor! " + err))
+})
 
 app.get("/groups", function (req, res) {
     console.time("groups")

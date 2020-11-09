@@ -22,7 +22,25 @@ module.exports = {
     },
 
     insertData(dataId, data) {
-        //Faz o insert 
+        return new Promise((resolve, reject) => {
+            dataManager(dataId).insert(data).then((result) => {
+                setTimeout(() => {
+                    loadCache(dataId)
+                }, 1)
+                resolve(result)
+            }).catch((err) => reject(err))
+        })
+    },
+
+    updateData(dataId, data) {
+        return new Promise((resolve, reject) => {
+            dataManager(dataId).update(data).then((result) => {
+                setTimeout(() => {
+                    loadCache(dataId)
+                }, 1)
+                resolve(result)
+            }).catch((err) => reject(err))
+        })
     },
 
     getData: function (dataId) {
@@ -40,7 +58,6 @@ module.exports = {
                     resolve(cache["resume-" + dataId])
                 }
                 else {
-                    //resolve(result.map((item) => getResume(dataId, item)))
                     resolve(result)
                 }
             }).catch((err) => reject(err))
@@ -87,22 +104,38 @@ const cacheMachine = function () {
     const promises = []
     timestampsToCheck.forEach(item => promises.push(checkTimestamp(item)))
     Promise.all(promises)
-    .then(() => { })
-    .catch((err) => {
-        log.log(err);
-    })
-    .finally(() => {
-        setTimeout(() => {
-            cacheMachine()
-        }, 2000)
-    })
+        .then(() => { })
+        .catch((err) => {
+            log.log(err);
+        })
+        .finally(() => {
+            setTimeout(() => {
+                cacheMachine()
+            }, 2000)
+        })
+}
+
+const loadCache = function (dataId) {
+    if (cacheConfig[dataId].isCacheable) {
+        if (cacheConfig[dataId].checkTimestamp) {
+            checkTimestamp(dataId)
+                .catch((err) => log.log(err));
+        }
+        else {
+            dataManager(dataId).getAll()
+                .then(result => {
+                    setData(dataId, result)
+                })
+                .catch((err) => log.log(err));
+        }
+    }
 }
 
 const checkTimestamp = function (dataId) {
     return new Promise((resolve, reject) => {
-        if (cache[dataId]) { 
+        if (cache[dataId]) {
             if (cacheConfig[dataId].checkTimestamp) {
-                dataManager(dataId).getTimestamp({timestamp: cache["timestamp-" + dataId]})
+                dataManager(dataId).getTimestamp({ timestamp: cache["timestamp-" + dataId] })
                     .then((alteredRows) => {
                         alteredRows.forEach((item) => {
                             const index = cache[dataId].findIndex((cacheItem) => cacheItem[cacheConfig[dataId].id] === item[cacheConfig[dataId].id])
@@ -110,7 +143,7 @@ const checkTimestamp = function (dataId) {
                                 cache[dataId][index] = item
                             }
                             else {
-                                cache[dataId].push(item) 
+                                cache[dataId].push(item)
                             }
                         })
                         if (alteredRows.length > 0) {
@@ -135,7 +168,7 @@ const setData = function (dataId, data) {
     if (cacheConfig[dataId].checkTimestamp) {
         cache["timestamp-" + dataId] = getCacheTimestamp(dataId, data)
         log.log("Atribuindo cache: " + cache["timestamp-" + dataId])
-        if (timestampsToCheck.indexOf(dataId) < 0) { 
+        if (timestampsToCheck.indexOf(dataId) < 0) {
             timestampsToCheck.push(dataId)
         }
     }
@@ -158,13 +191,5 @@ const getResume = function (dataId, data) {
 
 const getCacheTimestamp = function (dataId, data) {
     const timestampField = cacheConfig[dataId].checkTimestamp
-    return data.reduce((lastValue, item) => {
-        if (item[timestampField] > lastValue) {
-            return item[timestampField]
-        }
-        else {
-            return lastValue
-        }
-    }, 0)
+    return data.reduce((lastValue, item) => (item[timestampField] > lastValue) ? item[timestampField] : lastValue, 0)
 }
-

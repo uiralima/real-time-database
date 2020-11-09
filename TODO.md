@@ -1,1 +1,3 @@
 - Tratar deleção em tabelas com timestamp
+- Notificar clientes de alteraçõesd
+- Pensar solução para querys com multiplas tabelas

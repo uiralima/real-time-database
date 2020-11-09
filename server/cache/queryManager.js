@@ -25,7 +25,7 @@ module.exports = function (dataId) {
 const organizeParameters = function (config, parameters) {
     let query = config.query
     config.parameters.forEach((item) => {
-        query = query.replace(`{@${item}}`, parameters[item])
+        query = query.replace(`{@${item}}`, `'${parameters[item]}'`)
     })
     return query
 }
